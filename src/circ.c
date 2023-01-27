@@ -11,14 +11,14 @@ void printCircuit(Circuit c){
 	for(int i = 0; i < c.fill; i++){
 		printf("%06x : ", i);
 		switch(c.gates[i].k){
-			case G_EQ	: printf("EQ   %6i %6i > %6i\n", c.gates[i].a,            0, c.gates[i].c ); break;
-			case G_NOT	: printf("NOT  %6i %6i > %6i\n", c.gates[i].a,            0, c.gates[i].c ); break;
-			case G_AND	: printf("AND  %6i %6i > %6i\n", c.gates[i].a, c.gates[i].b, c.gates[i].c ); break;
-			case G_NAND	: printf("NAND %6i %6i > %6i\n", c.gates[i].a, c.gates[i].b, c.gates[i].c ); break;
-			case G_OR	: printf("OR   %6i %6i > %6i\n", c.gates[i].a, c.gates[i].b, c.gates[i].c ); break;
-			case G_NOR	: printf("NOR  %6i %6i > %6i\n", c.gates[i].a, c.gates[i].b, c.gates[i].c ); break;
-			case G_XOR	: printf("XOR  %6i %6i > %6i\n", c.gates[i].a, c.gates[i].b, c.gates[i].c ); break;
-			case G_XNOR	: printf("XNOR %6i %6i > %6i\n", c.gates[i].a, c.gates[i].b, c.gates[i].c ); break;
+			case G_EQ	: printf("EQ   [%4i] %6i %6i > %6i\n", c.gates[i].width, c.gates[i].a,            0, c.gates[i].c ); break;
+			case G_NOT	: printf("NOT  [%4i] %6i %6i > %6i\n", c.gates[i].width, c.gates[i].a,            0, c.gates[i].c ); break;
+			case G_AND	: printf("AND  [%4i] %6i %6i > %6i\n", c.gates[i].width, c.gates[i].a, c.gates[i].b, c.gates[i].c ); break;
+			case G_NAND	: printf("NAND [%4i] %6i %6i > %6i\n", c.gates[i].width, c.gates[i].a, c.gates[i].b, c.gates[i].c ); break;
+			case G_OR	: printf("OR   [%4i] %6i %6i > %6i\n", c.gates[i].width, c.gates[i].a, c.gates[i].b, c.gates[i].c ); break;
+			case G_NOR	: printf("NOR  [%4i] %6i %6i > %6i\n", c.gates[i].width, c.gates[i].a, c.gates[i].b, c.gates[i].c ); break;
+			case G_XOR	: printf("XOR  [%4i] %6i %6i > %6i\n", c.gates[i].width, c.gates[i].a, c.gates[i].b, c.gates[i].c ); break;
+			case G_XNOR	: printf("XNOR [%4i] %6i %6i > %6i\n", c.gates[i].width, c.gates[i].a, c.gates[i].b, c.gates[i].c ); break;
 		}
 	}
 }
@@ -42,7 +42,7 @@ int		circMakeWires(Circuit* c, int wires){
 }
 
 
-int		circMakeGate(Circuit* c, GateKind k, int a, int b, int q){
+int		circMakeGate(Circuit* c, GateKind k, int a, int b, int q, int width){
 	if(c->fill+5 >= c->size){
 		Gate* tmp = c->gates;
 		c->size  *= 2;
@@ -50,22 +50,10 @@ int		circMakeGate(Circuit* c, GateKind k, int a, int b, int q){
 		for(int i = 0; i < c->fill; i++)  c->gates[i] = tmp[i];
 		free(tmp);
 	}
-	c->gates[c->fill] = (Gate){.k=k, .a=a, .b=b, .c=q};
+	c->gates[c->fill] = (Gate){.k=k, .a=a, .b=b, .c=q, .width=width};
 	c->fill++;
 	return c->fill-1;
 }
 
 
-int		circMakeGates	(Circuit* c, GateKind k, int as, int bs, int qs, int ct){
-	if(c->fill+ct+5 >= c->size){
-		Gate* tmp = c->gates;
-		c->size  *= 2;
-		c->gates  = malloc(sizeof(Gate) * c->size);
-		for(int i = 0; i < c->fill; i++)  c->gates[i] = tmp[i];
-		free(tmp);
-	}
-	for(int i = 0; i < ct; i++)
-		c->gates[c->fill+i] = (Gate){.k=k, .a=as+i, .b=bs+i, .c=qs+i};
-	c->fill += ct;
-	return c->fill-ct;
-}
+

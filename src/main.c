@@ -13,7 +13,7 @@ int main(){
 	int bs = circMakeWires(&c, 64);
 	int qs = circMakeWires(&c, 64);
 	
-	circMakeGates(&c, G_NAND, as, bs, qs, 64);
+	circMakeGate(&c, G_NAND, as, bs, qs, 64);
 	
 	printCircuit(c);
 }

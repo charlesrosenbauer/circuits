@@ -19,6 +19,7 @@ typedef enum{
 
 typedef struct{
 	uint32_t a, b, c;
+	uint32_t width;
 	GateKind k;
 }Gate;
 
@@ -32,8 +33,7 @@ void	printCircuit	(Circuit);
 
 Circuit	makeCircuit		(int);
 int		circMakeWires	(Circuit*, int);
-int		circMakeGate	(Circuit*, GateKind, int, int, int);
-int		circMakeGates	(Circuit*, GateKind, int, int, int, int);
+int		circMakeGate	(Circuit*, GateKind, int, int, int, int);
 
 
 
