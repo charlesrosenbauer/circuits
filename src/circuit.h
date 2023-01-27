@@ -24,14 +24,17 @@ typedef struct{
 }Gate;
 
 typedef struct{
-	Gate*	gates;
-	int		fill, size, wirect;
+	Gate*		gates;
+	int			fill, size;
+	
+	uint64_t* 	wirebits;
+	int			wirect, wiresize;
 }Circuit;
 
 
 void	printCircuit	(Circuit);
 
-Circuit	makeCircuit		(int);
+Circuit	makeCircuit		(int, int);
 int		circMakeWires	(Circuit*, int);
 int		circMakeGate	(Circuit*, GateKind, int, int, int, int);
 

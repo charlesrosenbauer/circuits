@@ -7,7 +7,7 @@
 
 
 int main(){
-	Circuit c = makeCircuit(512);
+	Circuit c = makeCircuit(512, 192);
 	
 	int as = circMakeWires(&c, 64);
 	int bs = circMakeWires(&c, 64);

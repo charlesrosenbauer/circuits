@@ -24,12 +24,14 @@ void printCircuit(Circuit c){
 }
 
 
-Circuit	makeCircuit(int size){
+Circuit	makeCircuit(int size, int wirect){
 	Circuit ret;
-	ret.gates  = malloc(sizeof(Gate) * size);
-	ret.fill   = 0;
-	ret.size   = size;
-	ret.wirect = 0;
+	ret.gates 		= malloc(sizeof(Gate) * size);
+	ret.fill  		= 0;
+	ret.size  		= size;
+	ret.wirect		=  wirect;
+	ret.wiresize	= (wirect / 64) + ((wirect % 64) != 0);
+	ret.wirebits	= malloc(sizeof(uint64_t) * ret.wiresize);
 	return ret;
 }
 
