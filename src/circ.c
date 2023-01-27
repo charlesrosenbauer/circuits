@@ -19,6 +19,8 @@ void printCircuit(Circuit c){
 			case G_NOR	: printf("NOR  [%4i] %6i %6i > %6i\n", c.gates[i].width, c.gates[i].a, c.gates[i].b, c.gates[i].c ); break;
 			case G_XOR	: printf("XOR  [%4i] %6i %6i > %6i\n", c.gates[i].width, c.gates[i].a, c.gates[i].b, c.gates[i].c ); break;
 			case G_XNOR	: printf("XNOR [%4i] %6i %6i > %6i\n", c.gates[i].width, c.gates[i].a, c.gates[i].b, c.gates[i].c ); break;
+			case G_SLAT	: printf("SLAT [%4i] %6i %6i > %6i\n", c.gates[i].width, c.gates[i].a, c.gates[i].b, c.gates[i].c ); break;
+			case G_DLAT	: printf("DLAT [%4i] %6i %6i > %6i\n", c.gates[i].width, c.gates[i].a, c.gates[i].b, c.gates[i].c ); break;
 		}
 	}
 }
@@ -29,9 +31,10 @@ Circuit	makeCircuit(int size, int wirect){
 	ret.gates 		= malloc(sizeof(Gate) * size);
 	ret.fill  		= 0;
 	ret.size  		= size;
-	ret.wirect		=  wirect;
-	ret.wiresize	= (wirect / 64) + ((wirect % 64) != 0);
-	ret.wirebits	= malloc(sizeof(uint64_t) * ret.wiresize);
+	ret.wirect		=   wirect;
+	ret.maxwires	= ((wirect * 2) + 63) & -64;
+	ret.wiresize	=  (wirect / 64) + ((wirect % 64) != 0);
+	ret.wirebits	= malloc(sizeof(uint64_t) * ret.maxwires / 64);
 	return ret;
 }
 

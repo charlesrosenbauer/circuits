@@ -14,7 +14,9 @@ typedef enum{
 	G_OR	= 4,
 	G_NOR	= 5,
 	G_XOR	= 6,
-	G_XNOR	= 7
+	G_XNOR	= 7,
+	G_SLAT	= 8,
+	G_DLAT	= 9
 }GateKind;
 
 typedef struct{
@@ -28,7 +30,9 @@ typedef struct{
 	int			fill, size;
 	
 	uint64_t* 	wirebits;
-	int			wirect, wiresize;
+	int			wirect, maxwires, wiresize;
+	
+	// TODO: add memory
 }Circuit;
 
 
