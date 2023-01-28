@@ -37,6 +37,7 @@ void simulatorStep(Circuit* c){
 					case G_NOR	: q = ~(a | b); break;
 					case G_XOR	: q =   a ^ b ; break;
 					case G_XNOR	: q = ~(a ^ b); break;
+					default : break;
 				}
 				
 				c->wirebits[qix/64] = q;
