@@ -8,7 +8,6 @@
 
 
 void simulatorStep(Circuit* c){
-	int* wiredeltas = malloc(sizeof(int) * c->wiresize);
 	for(int i = 0; i < c->fill; i++){
 		/*
 			TODO:
@@ -16,32 +15,89 @@ void simulatorStep(Circuit* c){
 			* account for changing wires
 		*/
 		Gate g = c->gates[i];
-		if((g.k == G_SLAT) || (g.k == G_DLAT)){
-			// MEMORY
-		}else{
-			int aix = g.a;
-			int bix = g.b;
-			int qix = g.c;
-			for(int j = 0; j < g.width; j += 64){
-				// TODO: handle cases for unaligned bits
-				uint64_t a, b, q;
-				a = c->wirebits[aix / 64];
-				b = c->wirebits[bix / 64];
-				
-				switch(g.k){
-					case G_EQ	: q =       a ; break;
-					case G_NOT	: q =      ~a ; break;
-					case G_AND	: q =   a & b ; break;
-					case G_NAND	: q = ~(a & b); break;
-					case G_OR	: q =   a | b ; break;
-					case G_NOR	: q = ~(a | b); break;
-					case G_XOR	: q =   a ^ b ; break;
-					case G_XNOR	: q = ~(a ^ b); break;
-					default : break;
+		switch(g.k){
+			case G_EQ	: {
+				for(int j = 0; j < g.width; j++){
+					uint64_t am = 1l << ((g.a + j) % 64);
+					uint64_t ai = (g.a + j) / 64;
+					uint64_t cm = 1l << ((g.c + j) % 64);
+					uint64_t ci = (g.c + j) / 64;
+					c->wirebits[ci] &= ~cm;
+					c->wirebits[ci] |= (c->wirebits[ai] & am)? cm : 0;
 				}
+			}break;
+			case G_NOT	: {
+				for(int j = 0; j < g.width; j++){
+					uint64_t am = 1l << ((g.a + j) % 64);
+					uint64_t ai = (g.a + j) / 64;
+					uint64_t cm = 1l << ((g.c + j) % 64);
+					uint64_t ci = (g.c + j) / 64;
+					c->wirebits[ci] &= ~cm;
+					c->wirebits[ci] |= (c->wirebits[ai] & am)? 0 : cm;
+				}
+			}break;
+			case G_AND	: {
+				for(int j = 0; j < g.width; j++){
+					uint64_t am = 1l << ((g.a + j) % 64);
+					uint64_t ai = (g.a + j) / 64;
+					uint64_t bm = 1l << ((g.b + j) % 64);
+					uint64_t bi = (g.b + j) / 64;
+					uint64_t cm = 1l << ((g.c + j) % 64);
+					uint64_t ci = (g.c + j) / 64;
+					c->wirebits[ci] &= ~cm;
+					c->wirebits[ci] |= ((c->wirebits[ai] & am) && (c->wirebits[bi] & bm))? cm : 0;
+				}
+			}break;
+			case G_NAND	: {
+				for(int j = 0; j < g.width; j++){
+					uint64_t am = 1l << ((g.a + j) % 64);
+					uint64_t ai = (g.a + j) / 64;
+					uint64_t bm = 1l << ((g.b + j) % 64);
+					uint64_t bi = (g.b + j) / 64;
+					uint64_t cm = 1l << ((g.c + j) % 64);
+					uint64_t ci = (g.c + j) / 64;
+					c->wirebits[ci] &= ~cm;
+					c->wirebits[ci] |= ((c->wirebits[ai] & am) && (c->wirebits[bi] & bm))? 0 : cm;
+				}
+			}break;
+			case G_OR	: {
+				for(int j = 0; j < g.width; j++){
+					uint64_t am = 1l << ((g.a + j) % 64);
+					uint64_t ai = (g.a + j) / 64;
+					uint64_t bm = 1l << ((g.b + j) % 64);
+					uint64_t bi = (g.b + j) / 64;
+					uint64_t cm = 1l << ((g.c + j) % 64);
+					uint64_t ci = (g.c + j) / 64;
+					c->wirebits[ci] &= ~cm;
+					c->wirebits[ci] |= ((c->wirebits[ai] & am) || (c->wirebits[bi] & bm))? cm : 0;
+				}
+			}break;
+			case G_NOR	: {
+				for(int j = 0; j < g.width; j++){
+					uint64_t am = 1l << ((g.a + j) % 64);
+					uint64_t ai = (g.a + j) / 64;
+					uint64_t bm = 1l << ((g.b + j) % 64);
+					uint64_t bi = (g.b + j) / 64;
+					uint64_t cm = 1l << ((g.c + j) % 64);
+					uint64_t ci = (g.c + j) / 64;
+					c->wirebits[ci] &= ~cm;
+					c->wirebits[ci] |= ((c->wirebits[ai] & am) || (c->wirebits[bi] & bm))? 0 : cm;
+				}
+			}break;
+			
+			// TODO: xor, xnor, sram
+			case G_XOR	: {
 				
-				c->wirebits[qix/64] = q;
-			}
+			}break;
+			case G_XNOR	: {
+			
+			}break;
+			case G_SLAT	: {
+			
+			}break;
+			case G_DLAT	: {
+			
+			}break;
 		}
 	}
 }
