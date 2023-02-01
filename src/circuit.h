@@ -20,8 +20,14 @@ typedef enum{
 }GateKind;
 
 typedef struct{
-	uint32_t a, b, c;
-	uint32_t width;
+	uint32_t a, b, c, m;
+	union{
+		uint16_t width;		// normal gates
+		struct{
+			uint8_t  h;		// sram
+			uint8_t  w;
+		};
+	};
 	GateKind k;
 }Gate;
 
