@@ -8,6 +8,14 @@
 
 
 void simulatorStep(Circuit* c){
+	c->time++;
+	uint64_t* tmp = c->next;
+	c->next = c->bits;
+	c->bits = c->next;
+	for(int i = 0; i < c->maxwires / 64; i++) c->next[i] = 0;
+	
+	
+
 	for(int i = 0; i < c->fill; i++){
 		/*
 			TODO:
@@ -18,12 +26,11 @@ void simulatorStep(Circuit* c){
 		switch(g.k){
 			case G_EQ	: {
 				for(int j = 0; j < g.width; j++){
-					uint64_t am = 1l << ((g.a + j) % 64);
-					uint64_t ai = (g.a + j) / 64;
-					uint64_t cm = 1l << ((g.c + j) % 64);
-					uint64_t ci = (g.c + j) / 64;
-					c->wirebits[ci] &= ~cm;
-					c->wirebits[ci] |= (c->wirebits[ai] & am)? cm : 0;
+					uint64_t am  = 1l << ((g.a + j) % 64);
+					uint64_t ai  = (g.a + j) / 64;
+					uint64_t cm  = 1l << ((g.c + j) % 64);
+					uint64_t ci  = (g.c + j) / 64;
+					c->next[ci] |= (c->bits[ai] & am)? cm : 0;
 				}
 			}break;
 			case G_NOT	: {
@@ -32,8 +39,7 @@ void simulatorStep(Circuit* c){
 					uint64_t ai = (g.a + j) / 64;
 					uint64_t cm = 1l << ((g.c + j) % 64);
 					uint64_t ci = (g.c + j) / 64;
-					c->wirebits[ci] &= ~cm;
-					c->wirebits[ci] |= (c->wirebits[ai] & am)? 0 : cm;
+					c->next[ci] |= (c->bits[ai] & am)? 0 : cm;
 				}
 			}break;
 			case G_AND	: {
@@ -44,8 +50,7 @@ void simulatorStep(Circuit* c){
 					uint64_t bi = (g.b + j) / 64;
 					uint64_t cm = 1l << ((g.c + j) % 64);
 					uint64_t ci = (g.c + j) / 64;
-					c->wirebits[ci] &= ~cm;
-					c->wirebits[ci] |= ((c->wirebits[ai] & am) && (c->wirebits[bi] & bm))? cm : 0;
+					c->next[ci] |= ((c->bits[ai] & am) && (c->bits[bi] & bm))? cm : 0;
 				}
 			}break;
 			case G_NAND	: {
@@ -56,8 +61,7 @@ void simulatorStep(Circuit* c){
 					uint64_t bi = (g.b + j) / 64;
 					uint64_t cm = 1l << ((g.c + j) % 64);
 					uint64_t ci = (g.c + j) / 64;
-					c->wirebits[ci] &= ~cm;
-					c->wirebits[ci] |= ((c->wirebits[ai] & am) && (c->wirebits[bi] & bm))? 0 : cm;
+					c->next[ci] |= ((c->bits[ai] & am) && (c->bits[bi] & bm))? 0 : cm;
 				}
 			}break;
 			case G_OR	: {
@@ -68,8 +72,7 @@ void simulatorStep(Circuit* c){
 					uint64_t bi = (g.b + j) / 64;
 					uint64_t cm = 1l << ((g.c + j) % 64);
 					uint64_t ci = (g.c + j) / 64;
-					c->wirebits[ci] &= ~cm;
-					c->wirebits[ci] |= ((c->wirebits[ai] & am) || (c->wirebits[bi] & bm))? cm : 0;
+					c->next[ci] |= ((c->bits[ai] & am) || (c->bits[bi] & bm))? cm : 0;
 				}
 			}break;
 			case G_NOR	: {
@@ -80,12 +83,9 @@ void simulatorStep(Circuit* c){
 					uint64_t bi = (g.b + j) / 64;
 					uint64_t cm = 1l << ((g.c + j) % 64);
 					uint64_t ci = (g.c + j) / 64;
-					c->wirebits[ci] &= ~cm;
-					c->wirebits[ci] |= ((c->wirebits[ai] & am) || (c->wirebits[bi] & bm))? 0 : cm;
+					c->next[ci] |= ((c->bits[ai] & am) || (c->bits[bi] & bm))? 0 : cm;
 				}
 			}break;
-			
-			// TODO: xor, xnor, sram
 			case G_XOR	: {
 				for(int j = 0; j < g.width; j++){
 					uint64_t am = 1l << ((g.a + j) % 64);
@@ -95,10 +95,9 @@ void simulatorStep(Circuit* c){
 					uint64_t cm = 1l << ((g.c + j) % 64);
 					uint64_t ci = (g.c + j) / 64;
 					
-					int a = (c->wirebits[ai] & am) != 0;
-					int b = (c->wirebits[bi] & bm) != 0;
-					c->wirebits[ci] &= ~cm;
-					c->wirebits[ci] |= (a != b)? cm : 0;
+					int a = (c->bits[ai] & am) != 0;
+					int b = (c->bits[bi] & bm) != 0;
+					c->next[ci] |= (a != b)? cm : 0;
 				}
 			}break;
 			case G_XNOR	: {
@@ -110,10 +109,9 @@ void simulatorStep(Circuit* c){
 					uint64_t cm = 1l << ((g.c + j) % 64);
 					uint64_t ci = (g.c + j) / 64;
 					
-					int a = (c->wirebits[ai] & am) != 0;
-					int b = (c->wirebits[bi] & bm) != 0;
-					c->wirebits[ci] &= ~cm;
-					c->wirebits[ci] |= (a != b)? 0 : cm;
+					int a = (c->bits[ai] & am) != 0;
+					int b = (c->bits[bi] & bm) != 0;
+					c->next[ci] |= (a != b)? 0 : cm;
 				}
 			}break;
 			case G_SLAT	: {
@@ -121,7 +119,7 @@ void simulatorStep(Circuit* c){
 					// selector bits
 					uint64_t sm = 1l << ((g.a + j) % 64);
 					uint64_t si = (g.a + j) / 64;
-					if(c->wirebits[si] & sm){
+					if(c->bits[si] & sm){
 						for(int k = 0; k < g.w; k++){
 							// bitline
 							uint64_t am = 1l << ((g.a + k) % 64);
@@ -133,20 +131,19 @@ void simulatorStep(Circuit* c){
 							uint64_t mm = 1l << ((g.m + (j * g.w) + k) % 64);
 							uint64_t mi = (g.m + (j * g.w) + k) / 64;
 							
-							int a = (c->wirebits[ai] & am) != 0;
-							int b = (c->wirebits[bi] & bm) != 0;
-							int m = (c->wirebits[mi] & mm) != 0;
+							int a = (c->bits[ai] & am) != 0;
+							int b = (c->bits[bi] & bm) != 0;
+							int m = (c->bits[mi] & mm) != 0;
 							
 							b = ~(a | m);
 							m = ~ b;
 							a =   m;
 							
-							c->wirebits[ai] |= a? am : 0;
+							c->next[ai] |= a? am : 0;
+							c->next[bi] |= b? bm : 0;
 							
-							c->wirebits[bi] |= b? bm : 0;
-							
-							c->wirebits[mi] &= ~mm;
-							c->wirebits[mi] |= m? mm : 0;
+							c->next[mi] &= ~mm;
+							c->next[mi] |= m? mm : 0;
 						}
 					}
 				}
@@ -163,12 +160,12 @@ void simulatorStep(Circuit* c){
 					uint64_t cm = 1l << ((g.c + j) % 64);
 					uint64_t ci = (g.c + j) / 64;
 					
-					int a = (c->wirebits[ai] & am) != 0;
-					int b = (c->wirebits[bi] & bm) != 0;
+					int a = (c->bits[ai] & am) != 0;
+					int b = (c->bits[bi] & bm) != 0;
 					
 					if(b){
-						c->wirebits[ci] &= ~cm;
-						c->wirebits[ci] |= a? cm : 0;
+						c->next[ci] &= ~cm;
+						c->next[ci] |= a? cm : 0;
 					}
 				}
 			}break;

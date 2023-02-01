@@ -32,15 +32,28 @@ typedef struct{
 }Gate;
 
 typedef struct{
+	char name[16];
+	int  bs, width;
+}Buffer;
+
+typedef struct{
 	Gate*		gates;
 	int			fill, size;
 	
-	uint64_t* 	wirebits;
+	uint64_t*	bits;
+	uint64_t*	next;
+	
 	int			wirect, maxwires, wiresize;
+	
+	int			time;
+	
+	Buffer*		bufs;
+	int			bfill, bsize;
 }Circuit;
 
 
 void	printCircuit	(Circuit);
+void	readCircuit		(Circuit);
 
 Circuit	makeCircuit		(int, int);
 int		circMakeWires	(Circuit*, int);

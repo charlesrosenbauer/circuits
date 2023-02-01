@@ -34,7 +34,10 @@ Circuit	makeCircuit(int size, int wirect){
 	ret.wirect		=   wirect;
 	ret.maxwires	= ((wirect * 2) + 63) & -64;
 	ret.wiresize	=  (wirect / 64) + ((wirect % 64) != 0);
-	ret.wirebits	= malloc(sizeof(uint64_t) * ret.maxwires / 64);
+	
+	ret.bits		= malloc(sizeof(uint64_t) * ret.maxwires / 64);
+	ret.next		= malloc(sizeof(uint64_t) * ret.maxwires / 64);
+	for(int i = 0; i < ret.maxwires / 64; i++){ ret.bits[i] = 0; ret.next[i] = 0; }
 	return ret;
 }
 
