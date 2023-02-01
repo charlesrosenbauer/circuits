@@ -31,8 +31,6 @@ typedef struct{
 	
 	uint64_t* 	wirebits;
 	int			wirect, maxwires, wiresize;
-	
-	// TODO: add memory
 }Circuit;
 
 
