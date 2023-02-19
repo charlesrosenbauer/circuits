@@ -1,5 +1,5 @@
 all:
-	clang -O3	src/*.c -o circ
+	clang -O3	-lSDL2	src/*.c -o circ
 
 debug:
-	clang -Og -g	src/*.c -o circ
+	clang -Og -g	-lSDL2	src/*.c -o circ
