@@ -6,6 +6,13 @@
 
 
 
+/*
+	NOTES:
+	* Circuit consists of interlinked sequential blocks and memory blocks
+	* Sequential blocks can be split into time steps for faster/more accurate
+		simulation
+*/
+
 typedef enum{
 	G_EQ	= 0,
 	G_NOT	= 1,
@@ -35,6 +42,15 @@ typedef struct{
 	char name[16];
 	int  bs, width;
 }Buffer;
+
+typedef struct{
+	Gate**		gates;
+	int*		rowsizes;
+	int			rowct;
+	
+	int			wirect;
+}SeqBlock;
+
 
 typedef struct{
 	Gate*		gates;
