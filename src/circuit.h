@@ -6,7 +6,43 @@
 
 
 
+
+
+
 /*
+	CMOS SIMULATION:
+	* simulate NMOS and PMOS transistors
+	* simulate pull-up, pull-down logic
+	* eventually compute logical effort
+	* map between gates and CMOS for sim tradeoffs
+*/
+typedef struct{
+	uint32_t*	ngats;
+	uint32_t*	nsrcs;
+	int			nfill, nsize;
+	
+	uint32_t*	pgats;
+	uint32_t*	psrcs;
+	int			pfill, psize;
+	
+	uint32_t*	links;
+	int			lfill, lsize;
+	
+	int			wirect;
+}CMOSCircuit;
+
+
+
+
+
+
+
+
+
+
+/*
+	GATE SIMULATION:
+
 	NOTES:
 	* Circuit consists of interlinked sequential blocks and memory blocks
 	* Sequential blocks can be split into time steps for faster/more accurate
