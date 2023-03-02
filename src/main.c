@@ -42,11 +42,7 @@ int main(){
 	};
 	for(int i = 0; i < 4096; i++){
 		for(int j = 0; j < 4096; j++){
-			int m = (i * 781931) - 531789 + (j * 7785931);
-			int n = (j * 387911) ^ 445181 ^ (i * 3751891);
-			uint32_t c = (((m ^ n) + (m - n)) & 0x800)? 0xcf3f3f : 0x3f7f7f; 
-		
-			disp.pix[(i * 4096) + j] = c;
+			disp.pix[(i * 4096) + j] = ((i ^ j) & 1)? 0xcfcfcf : 0;
 		}
 	}
 	
@@ -56,22 +52,41 @@ int main(){
 	SDL_Event e;
 	int cont = 1;
 	
+	int drag = 0;
 	int mx   = 0;
 	int my   = 0;
+	int dx   = 0;
+	int dy   = 0;
 	while(cont){
 		while(SDL_PollEvent(&e))
 			switch(e.type){
 				case SDL_QUIT : cont = 0; break;
 				case SDL_MOUSEMOTION : {
-				
+					if(drag){
+						mx = e.motion.x;
+						my = e.motion.y;
+						
+						v.x = mx;
+						v.y = my;
+					}else{
+						mx = 0;
+						my = 0;
+					}
 				}break;
 				
 				case SDL_MOUSEBUTTONDOWN : {
-				
+					drag = 1;
+					dx   = e.button.x;
+					dy   = e.button.y;
 				}break;
 				
 				case SDL_MOUSEBUTTONUP   : {
+					drag = 0;
+				}break;
 				
+				case SDL_MOUSEWHEEL : {
+					v.zoom += e.wheel.y;
+					v.zoom  = (v.zoom < 0)? 0 : v.zoom;
 				}break;
 			}
 		

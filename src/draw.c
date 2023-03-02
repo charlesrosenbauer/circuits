@@ -81,7 +81,15 @@ void drawView(View v, Img dst, Img src){
 					int w = (x * src.w) + y;
 					int z = (i * dst.w) + j;
 					dst.pix[z] = src.pix[w];
+				}else{
+					int z = (i * dst.w) + j;
+					dst.pix[z] = 0;
 				}
+			}
+		}else{
+			for(int j = 0; j < dst.w; j++){
+				int z = (i * dst.w) + j;
+				dst.pix[z] = 0;
 			}
 		}
 	}
