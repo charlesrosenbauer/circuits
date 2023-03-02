@@ -10,10 +10,17 @@ typedef struct{
 	int			h, w;
 }Img;
 
+typedef struct{
+	int			zoom;
+	int			x, y;
+}View;
+
 
 void	drawRect	(Img, int, int, int, int, uint32_t);
 void	drawVLine	(Img, int, int, int, uint32_t);
 void	drawHLine	(Img, int, int, int, uint32_t);
+
+void	drawView	(View, Img, Img);
 
 
 
