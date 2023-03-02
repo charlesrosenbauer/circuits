@@ -1,0 +1,13 @@
+Circuit program
+
+---
+
+
+This program is meant to allow for interactive construction, verification, and simulation of circuits.
+
+The plan is for both logic gates (and/or/not/xor/etc.) and cmos (nmos/pmos) to be supported, as well as with methods of linking the two.
+
+SRAM also needs to be supported of course.
+
+
+Circuits should be able to be grouped into modules, wires grouped into buses.
