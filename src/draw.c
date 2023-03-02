@@ -78,7 +78,7 @@ void drawView(View v, Img dst, Img src){
 			for(int j = 0; j < dst.w; j++){
 				int x = (j >> v.zoom) + px;
 				if((x >= 0) && (x < src.w)){
-					int w = (x * src.w) + y;
+					int w = (y * src.w) + x;
 					int z = (i * dst.w) + j;
 					dst.pix[z] = src.pix[w];
 				}else{

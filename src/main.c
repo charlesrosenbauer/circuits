@@ -40,11 +40,7 @@ int main(){
 		.h		= 4096,
 		.w		= 4096
 	};
-	for(int i = 0; i < 4096; i++){
-		for(int j = 0; j < 4096; j++){
-			disp.pix[(i * 4096) + j] = ((i ^ j) & 1)? 0xcfcfcf : 0;
-		}
-	}
+	for(int i = 0; i < 16777216; i++) disp.pix[i] = 0x1f1f1f;
 	
 	View v = (View){0, 2048, 2048};
 
@@ -58,26 +54,35 @@ int main(){
 	int dx   = 0;
 	int dy   = 0;
 	while(cont){
-		while(SDL_PollEvent(&e))
+		while(SDL_PollEvent(&e)){
 			switch(e.type){
 				case SDL_QUIT : cont = 0; break;
 				case SDL_MOUSEMOTION : {
 					if(drag){
-						mx = e.motion.x;
-						my = e.motion.y;
+						// This is a rough approximation, particularly with zoom
+						// Ideally we want to handle zoom scaling much better
+						dx   = e.motion.xrel >> v.zoom;
+						dy   = e.motion.yrel >> v.zoom;
 						
-						v.x = mx;
-						v.y = my;
+						v.x -= dx;
+						v.y -= dy;
 					}else{
-						mx = 0;
-						my = 0;
+						dx = 0;
+						dy = 0;
+						
+						int x = ((e.motion.x - 1600) >> v.zoom) + v.x;
+						int y = ((e.motion.y -  900) >> v.zoom) + v.y;
+						if((x >= 0) && (x < disp.w) && (y >= 0) && (y < disp.h))
+							disp.pix[(y * disp.w) + x] = 0xffffff;
 					}
 				}break;
 				
 				case SDL_MOUSEBUTTONDOWN : {
 					drag = 1;
-					dx   = e.button.x;
-					dy   = e.button.y;
+					mx   = e.button.x - (v.x >> v.zoom) + 800;
+					my   = e.button.y - (v.y >> v.zoom) + 450;
+					dx   = 0;
+					dy   = 0;
 				}break;
 				
 				case SDL_MOUSEBUTTONUP   : {
@@ -89,8 +94,7 @@ int main(){
 					v.zoom  = (v.zoom < 0)? 0 : v.zoom;
 				}break;
 			}
-		
-		drawRect(img, 16, 16, 64, 128, 0xcfcfcf);
+		}
 		
 		drawView(v, img, disp);
 		
