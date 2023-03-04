@@ -3,6 +3,7 @@
 #include "stdio.h"
 
 #include "circuit.h"
+#include "module.h"
 #include "draw.h"
 
 #include "SDL2/SDL.h"
@@ -41,6 +42,18 @@ int main(){
 		.w		= 4096
 	};
 	for(int i = 0; i < 16777216; i++) disp.pix[i] = 0x1f1f1f;
+	P2 poss[4];
+	poss[0] = (P2){16, 16};
+	poss[1] = (P2){18, 18};
+	poss[2] = (P2){20, 20};
+	poss[3] = (P2){22, 22};
+	
+	drawModule(disp, (Module){
+		.pos     = (P2){2048, 2048},
+		.size    = (P2){  32,   32},
+		.gatect  = 4,
+		.gatepos = poss
+	});
 	
 	View v = (View){0, 2048, 2048};
 
